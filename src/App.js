@@ -42,7 +42,7 @@ function App() {
       }
     };
 
-    window.addEventListener('click', onClick);
+    // window.addEventListener('click', onClick);
   }, []);
 
   return (
