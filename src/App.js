@@ -1,47 +1,51 @@
-import './App.css';
-import * as THREE from "three";
-import {useEffect, useRef} from "react";
+import { useEffect } from 'react';
 
+import * as THREE from 'three';
+// import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
+// import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
+// import { VOXLoader } from 'three/examples/jsm/loaders/VOXLoader';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
+import SceneInit from './lib/SceneInit';
 
 function App() {
-
-  const mountRef = useRef(null)
-
   useEffect(() => {
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-    const renderer = new THREE.WebGLRenderer();
+    const test = new SceneInit('myThreeJsCanvas');
+    test.initialize();
+    test.animate();
 
-    renderer.setSize( window.innerWidth, window.innerHeight );
+    // const boxGeometry = new THREE.BoxGeometry(8, 8, 8);
+    // const boxMaterial = new THREE.MeshNormalMaterial();
+    // const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial);
+    // test.scene.add(boxMesh);
 
-    mountRef.current.appendChild( renderer.domElement );
+    let loadedModel;
+    const glftLoader = new GLTFLoader();
+    glftLoader.load('./shiba/scene.gltf', (gltfScene) => {
+      loadedModel = gltfScene;
+      // console.log(loadedModel);
 
-    const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-    const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-    const cube = new THREE.Mesh( geometry, material );
-    scene.add( cube );
-
-    camera.position.z = 5;
+      gltfScene.scene.rotation.y = Math.PI / 8;
+      gltfScene.scene.position.y = 3;
+      gltfScene.scene.scale.set(10, 10, 10);
+      test.scene.add(gltfScene.scene);
+    });
 
     const animate = () => {
-      requestAnimationFrame( animate );
-
-      cube.rotation.x += 0.01;
-      cube.rotation.y += 0.01;
-
-      renderer.render( scene, camera );
+      // if (loadedModel) {
+      //   loadedModel.scene.rotation.x += 0.01;
+      //   loadedModel.scene.rotation.y += 0.01;
+      //   loadedModel.scene.rotation.z += 0.01;
+      // }
+      requestAnimationFrame(animate);
     };
-
-    animate()
-
-    return () => mountRef.current.removeChild( renderer.domElement);
-  }, [])
-
+    animate();
+  }, []);
 
   return (
-    <div className="App" ref={mountRef}>
-    </div>
+      <div>
+        <canvas id="myThreeJsCanvas" />
+      </div>
   );
 }
 
